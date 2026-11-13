@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "git-gym-cli"
+version = "0.1.0"
+description = "A tiny scenario-based Git trainer with spaced repetition and a disposable local lab."
+requires-python = ">=3.9"
+
+[project.scripts]
+git-gym = "git_gym.cli:main"
+
+[tool.setuptools.package-data]
+git_gym = ["scenarios.json"]
+
+[tool.setuptools.packages.find]
+include = ["git_gym*"]

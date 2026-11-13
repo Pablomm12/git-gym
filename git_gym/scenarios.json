@@ -1,0 +1,270 @@
+[
+  {
+    "id": "01-status",
+    "topic": "status",
+    "title": "Inspect before acting",
+    "prompt": "You entered a repository. Check its branch, staged changes, unstaged changes, and untracked files.",
+    "answers": [
+      "git status"
+    ],
+    "why": "Shows the index and working tree relative to HEAD so you can choose the next operation.",
+    "verify": "Read the staged, unstaged, and untracked sections; git status --short gives a compact view.",
+    "hint": "Start with the repository state.",
+    "kind": "command"
+  },
+  {
+    "id": "02-staging",
+    "topic": "staging",
+    "title": "Review unstaged edits",
+    "prompt": "Review tracked edits that are not staged yet.",
+    "answers": [
+      "git diff"
+    ],
+    "why": "Compares the working tree to the index; it does not include untracked file contents.",
+    "verify": "The patch should contain only the unstaged edits you expect.",
+    "hint": "Compare working tree and index.",
+    "kind": "command"
+  },
+  {
+    "id": "03-staging",
+    "topic": "staging",
+    "title": "Stage selected hunks",
+    "prompt": "reports.txt has two unrelated edits. Stage just the relevant hunks.",
+    "answers": [
+      "git add --patch reports.txt"
+    ],
+    "why": "Interactive patch staging lets one commit express one intent.",
+    "verify": "git diff --staged shows selected hunks; git diff shows what remains.",
+    "hint": "Use interactive patch mode.",
+    "kind": "command"
+  },
+  {
+    "id": "04-staging",
+    "topic": "staging",
+    "title": "Review the next commit",
+    "prompt": "See exactly which tracked changes your next ordinary commit will contain.",
+    "answers": [
+      "git diff --staged",
+      "git diff --cached"
+    ],
+    "why": "Compares the index to HEAD, which is the content an ordinary git commit records.",
+    "verify": "Review every hunk, then use git status to confirm the staged file list.",
+    "hint": "Compare index and HEAD.",
+    "kind": "command"
+  },
+  {
+    "id": "05-staging",
+    "topic": "staging",
+    "title": "Unstage without losing work",
+    "prompt": "reports.txt was staged accidentally. Keep the edit but remove it from the index.",
+    "answers": [
+      "git restore --staged reports.txt"
+    ],
+    "why": "Restores the index from HEAD without changing the working file.",
+    "verify": "git diff --staged reports.txt is empty; git diff reports.txt still shows your edit.",
+    "hint": "Restore only the index.",
+    "kind": "command"
+  },
+  {
+    "id": "06-commits",
+    "topic": "commits",
+    "title": "Describe a feature commit",
+    "prompt": "Staged changes add report filters. Commit them using Conventional Commits.",
+    "answers": [
+      "git commit -m \"feat: add report filters\""
+    ],
+    "why": "A type and concise description communicate intent; feat describes new behavior.",
+    "verify": "git log -1 --format=%s and git show --stat HEAD confirm the message and files.",
+    "hint": "Use type: description.",
+    "kind": "command"
+  },
+  {
+    "id": "07-branches",
+    "topic": "branches",
+    "title": "Isolate a feature",
+    "prompt": "From main, create and switch to feat/filters.",
+    "answers": [
+      "git switch -c feat/filters",
+      "git checkout -b feat/filters"
+    ],
+    "why": "A branch moves with new commits and isolates the feature history.",
+    "verify": "git branch --show-current prints feat/filters.",
+    "hint": "Create while switching.",
+    "kind": "command"
+  },
+  {
+    "id": "08-worktrees",
+    "topic": "worktrees",
+    "title": "Parallel checkout",
+    "prompt": "Keep your current checkout intact and open feat/docs in a new sibling directory ../docs. That branch does not exist yet.",
+    "answers": [
+      "git worktree add -b feat/docs ../docs"
+    ],
+    "why": "A linked worktree has its own working files and index while sharing objects and refs.",
+    "verify": "git worktree list shows both paths; git -C ../docs branch --show-current prints feat/docs.",
+    "hint": "Add a worktree and a new branch.",
+    "kind": "command"
+  },
+  {
+    "id": "09-worktrees",
+    "topic": "worktrees",
+    "title": "Remove a finished checkout",
+    "prompt": "The linked worktree ../docs is clean and finished. Remove it safely.",
+    "answers": [
+      "git worktree remove ../docs"
+    ],
+    "why": "Removes the linked checkout and registration; it leaves the branch available.",
+    "verify": "git worktree list no longer includes ../docs; git branch still lists feat/docs.",
+    "hint": "Use worktree remove; do not force a dirty checkout.",
+    "kind": "command"
+  },
+  {
+    "id": "10-rebase",
+    "topic": "rebase",
+    "title": "Refresh remote knowledge",
+    "prompt": "Update your view of origin without merging into the current branch.",
+    "answers": [
+      "git fetch origin"
+    ],
+    "why": "Downloads objects and updates remote-tracking refs without integrating them into your branch.",
+    "verify": "git log --oneline --decorate --all shows updated origin refs.",
+    "hint": "Fetch first; integration is a separate decision.",
+    "kind": "command"
+  },
+  {
+    "id": "11-rebase",
+    "topic": "rebase",
+    "title": "Replay a private feature",
+    "prompt": "Your feature branch is private, the working tree is clean, and you just fetched origin. Replay your commits on origin/main.",
+    "answers": [
+      "git rebase origin/main"
+    ],
+    "why": "Replays feature commits over the fetched base, producing new commit IDs.",
+    "verify": "git status is clean; git log --graph --oneline --all shows the new base.",
+    "hint": "Rebase onto the fetched remote-tracking branch.",
+    "kind": "command",
+    "caution": "Rewrite only history you own, coordinate with collaborators, and keep a backup branch before rewriting. Never use an unconditional force push."
+  },
+  {
+    "id": "12-conflicts",
+    "topic": "conflicts",
+    "title": "Continue a resolved rebase",
+    "prompt": "A rebase stopped on reports.txt. You edited the file, removed conflict markers, and tested the resolution. What next?",
+    "answers": [
+      "git add reports.txt && git rebase --continue"
+    ],
+    "why": "Staging records the resolution; continue resumes replay. Repeat if later commits conflict.",
+    "verify": "git status reports progress or a clean finished branch; inspect and test the final result.",
+    "hint": "Stage the resolved file before continuing.",
+    "kind": "command"
+  },
+  {
+    "id": "13-conflicts",
+    "topic": "conflicts",
+    "title": "Abandon a rebase",
+    "prompt": "A rebase is in progress and you want to return to its starting state.",
+    "answers": [
+      "git rebase --abort"
+    ],
+    "why": "Cancels the rebase and restores the original branch state.",
+    "verify": "git status no longer reports a rebase; git log shows the original branch tip.",
+    "hint": "Abort the operation, not just the conflicted file.",
+    "kind": "command"
+  },
+  {
+    "id": "14-publishing",
+    "topic": "publishing",
+    "title": "Publish rewritten history carefully",
+    "prompt": "You rebased your own already-published feat/filters branch. You reviewed origin/feat/filters and recorded its exact old commit ID as OLD_SHA. Show a push that refuses to replace any other tip.",
+    "answers": [
+      "git push --force-with-lease=refs/heads/feat/filters:OLD_SHA origin feat/filters"
+    ],
+    "why": "An explicit expected old tip rejects the push if the remote branch changed, including changes hidden by a background fetch.",
+    "verify": "Check the push result, then git fetch origin and compare git rev-parse feat/filters origin/feat/filters.",
+    "hint": "Use a lease with the reviewed expected commit ID.",
+    "kind": "command",
+    "caution": "Rewrite only history you own, coordinate with collaborators, and keep a backup branch before rewriting. Never use an unconditional force push."
+  },
+  {
+    "id": "15-squash",
+    "topic": "squash",
+    "title": "Clean up local history",
+    "prompt": "Your private branch has exactly three feature commits after its base. Combine them before review.",
+    "answers": [
+      "git rebase --interactive HEAD~3",
+      "git rebase -i HEAD~3"
+    ],
+    "why": "Keep the first commit as pick and mark the next two squash (or fixup to discard their messages). This rewrites the commits.",
+    "verify": "git log --oneline shows one feature commit; compare the final files with a backup branch and run tests.",
+    "hint": "Open the last three commits in the rebase todo list.",
+    "kind": "command",
+    "caution": "Rewrite only history you own, coordinate with collaborators, and keep a backup branch before rewriting. Never use an unconditional force push."
+  },
+  {
+    "id": "16-stacked-prs",
+    "topic": "stacked-prs",
+    "title": "Create a dependent branch",
+    "prompt": "You are on feat/api and the next feature needs those unmerged changes. Start feat/ui on this tip.",
+    "answers": [
+      "git switch -c feat/ui"
+    ],
+    "why": "The child inherits the parent commits. When publishing, target the UI PR at feat/api so its diff contains only UI work.",
+    "verify": "git log --graph --oneline --all shows the shared parent; git diff feat/api...feat/ui starts empty.",
+    "hint": "Branch from the parent, not main.",
+    "kind": "command"
+  },
+  {
+    "id": "17-stacked-prs",
+    "topic": "stacked-prs",
+    "title": "Restack after a squash merge",
+    "prompt": "feat/ui contains UI commits after the original feat/api tip. feat/api was squash-merged to main. You fetched origin and kept feat/api at its ORIGINAL tip. Replay only UI commits onto origin/main.",
+    "answers": [
+      "git rebase --onto origin/main feat/api feat/ui"
+    ],
+    "why": "Excludes commits reachable from the old parent and replays the child-only commits on the new base. Retarget the UI PR to main afterward.",
+    "verify": "git log origin/main..feat/ui contains only UI commits; git diff origin/main...feat/ui shows only UI changes; run tests.",
+    "hint": "Use --onto with the new base, old parent tip, and child branch.",
+    "kind": "command",
+    "caution": "Rewrite only history you own, coordinate with collaborators, and keep a backup branch before rewriting. Never use an unconditional force push."
+  },
+  {
+    "id": "18-reflog",
+    "topic": "reflog",
+    "title": "Find a lost local tip",
+    "prompt": "A local branch was moved and you need to find its previous commit ID.",
+    "answers": [
+      "git reflog"
+    ],
+    "why": "Records local ref movements, including commits no longer reachable from branches. Entries expire and are not a remote backup.",
+    "verify": "Find the expected message and inspect its hash with git show before recovering.",
+    "hint": "Look at the local ref movement log.",
+    "kind": "command"
+  },
+  {
+    "id": "19-reflog",
+    "topic": "reflog",
+    "title": "Keep a recovered commit",
+    "prompt": "You inspected a lost commit and its hash is abc1234. Preserve it without changing the current checkout.",
+    "answers": [
+      "git branch rescue abc1234"
+    ],
+    "why": "A new branch makes the commit reachable while leaving your working tree untouched.",
+    "verify": "git show rescue and git branch --show-current confirm recovery and the unchanged checkout.",
+    "hint": "Name a branch at the inspected commit.",
+    "kind": "command"
+  },
+  {
+    "id": "20-commits",
+    "topic": "commits",
+    "title": "Repair the latest private message",
+    "prompt": "Your most recent commit is private and its message should be fix: handle empty filters. Change only its message; assume the index has no staged edits.",
+    "answers": [
+      "git commit --amend -m \"fix: handle empty filters\""
+    ],
+    "why": "Amend replaces the last commit, so its ID changes. A clean index prevents unrelated staged changes from being included.",
+    "verify": "git log -1 --format=%s confirms the message; git diff HEAD@{1} HEAD should be empty.",
+    "hint": "Amend the last commit with a new message.",
+    "kind": "command",
+    "caution": "Rewrite only history you own, coordinate with collaborators, and keep a backup branch before rewriting. Never use an unconditional force push."
+  }
+]
